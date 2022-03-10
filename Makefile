@@ -2,7 +2,13 @@ KEXTS= \
 	EFI/OC/Kexts/Lilu.kext \
 	EFI/OC/Kexts/WhateverGreen.kext \
 	EFI/OC/Kexts/AppleALC.kext \
-	EFI/OC/Kexts/VirtualSMC.kext
+	EFI/OC/Kexts/VirtualSMC.kext \
+	EFI/OC/Kexts/BrcmNonPatchRAM2.kext \
+	EFI/OC/Kexts/BrcmPatchRAM2.kext \
+	EFI/OC/Kexts/BrcmPatchRAM3.kext \
+	EFI/OC/Kexts/BrcmBluetoothInjector.kext \
+	EFI/OC/Kexts/BlueToolFixup.kext \
+	EFI/OC/Kexts/BrcmFirmwareData.kext
 
 DRIVERS= \
 	EFI/OC/Drivers/OpenHfsPlus.efi \
@@ -95,6 +101,41 @@ src/VirtualSMC/build/Release/VirtualSMC.kext : src/VirtualSMC/Lilu.kext src/Virt
 	cd src/VirtualSMC && xcodebuild -configuration Release
 	touch $@
 
+# BrcmPatchRAM:
+
+src/BrcmPatchRAM/build/Products/Release/BlueToolFixup.kext \
+src/BrcmPatchRAM/build/Products/Release/BrcmNonPatchRAM.kext \
+src/BrcmPatchRAM/build/Products/Release/BrcmNonPatchRAM2.kext \
+src/BrcmPatchRAM/build/Products/Release/BrcmPatchRAM2.kext \
+src/BrcmPatchRAM/build/Products/Release/BrcmPatchRAM3.kext \
+src/BrcmPatchRAM/build/Products/Release/BrcmFirmwareData.kext \
+src/BrcmPatchRAM/build/Products/Release/BrcmBluetoothInjector.kext : src/BrcmPatchRAM/Lilu.kext src/BrcmPatchRAM/MacKernelSDK
+	# Needs macOS 11 SDK rather than 12.0 to meet deployment target, e.g. from https://github.com/phracker/MacOSX-SDKs and:
+	# export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk
+	cd src/BrcmPatchRAM && xcodebuild -configuration Release
+	touch $@
+
+EFI/OC/Kexts/BrcmNonPatchRAM.kext : src/BrcmPatchRAM/build/Products/Release/BrcmNonPatchRAM.kext
+	cp -a $< $@
+
+EFI/OC/Kexts/BrcmNonPatchRAM2.kext : src/BrcmPatchRAM/build/Products/Release/BrcmNonPatchRAM2.kext
+	cp -a $< $@
+
+EFI/OC/Kexts/BrcmPatchRAM2.kext : src/BrcmPatchRAM/build/Products/Release/BrcmPatchRAM2.kext
+	cp -a $< $@
+
+EFI/OC/Kexts/BrcmPatchRAM3.kext : src/BrcmPatchRAM/build/Products/Release/BrcmPatchRAM3.kext
+	cp -a $< $@
+
+EFI/OC/Kexts/BrcmBluetoothInjector.kext : src/BrcmPatchRAM/build/Products/Release/BrcmBluetoothInjector.kext
+	cp -a $< $@
+	
+EFI/OC/Kexts/BlueToolFixup.kext : src/BrcmPatchRAM/build/Products/Release/BlueToolFixup.kext
+	cp -a $< $@
+
+EFI/OC/Kexts/BrcmFirmwareData.kext : src/BrcmPatchRAM/build/Products/Release/BrcmFirmwareData.kext
+	cp -a $< $@
+
 # Lilu:
 
 EFI/OC/Kexts/Lilu.kext : src/Lilu/build/Release/Lilu.kext
@@ -106,7 +147,8 @@ src/Lilu/build/Release/Lilu.kext src/Lilu/build/Debug/Lilu.kext : src/Lilu/MacKe
 
 src/WhateverGreen/Lilu.kext \
 src/AppleALC/Lilu.kext \
-src/VirtualSMC/Lilu.kext : src/Lilu/build/Debug/Lilu.kext
+src/VirtualSMC/Lilu.kext \
+src/BrcmPatchRAM/Lilu.kext : src/Lilu/build/Debug/Lilu.kext
 	ln -s ../Lilu/build/Debug/Lilu.kext $@
 
 # MacKernelSDK:
@@ -114,7 +156,8 @@ src/VirtualSMC/Lilu.kext : src/Lilu/build/Debug/Lilu.kext
 src/Lilu/MacKernelSDK \
 src/WhateverGreen/MacKernelSDK \
 src/AppleALC/MacKernelSDK \
-src/VirtualSMC/MacKernelSDK : src/MacKernelSDK
+src/VirtualSMC/MacKernelSDK \
+src/BrcmPatchRAM/MacKernelSDK : src/MacKernelSDK
 	ln -s ../MacKernelSDK $@
 	
 # OpenCore:
@@ -168,5 +211,6 @@ very-clean : clean
 	rm -rf src/OpenCorePkg/UDK
 
 clean :
-	rm -rf OpenCore-*.dmg OpenCoreEFIFolder-*.zip OpenCore-Image/ src/Lilu/build src/WhateverGreen/build src/OpenCorePkg/UDK/Build \
+	rm -rf OpenCore-Image/ src/Lilu/build src/WhateverGreen/build src/OpenCorePkg/UDK/Build src/BrcmPatchRAM/build \
 		src/AppleALC/build $(KEXTS) $(DRIVERS) $(TOOLS) $(MISC)
+	rm -f OpenCore-${RELEASE_VERSION}.dmg* OpenCore-${RELEASE_VERSION}.iso* OpenCoreEFIFolder-${RELEASE_VERSION}.zip 

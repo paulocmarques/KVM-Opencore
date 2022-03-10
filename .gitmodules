@@ -23,3 +23,6 @@
 [submodule "src/MacKernelSDK"]
 	path = src/MacKernelSDK
 	url = https://github.com/acidanthera/MacKernelSDK.git
+[submodule "src/BrcmPatchRAM"]
+	path = src/BrcmPatchRAM
+	url = https://github.com/acidanthera/BrcmPatchRAM.git
