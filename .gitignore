@@ -4,6 +4,8 @@ EFI/OC/Drivers/OpenHfsPlus.efi
 EFI/OC/Drivers/OpenRuntime.efi
 EFI/OC/Drivers/OpenCanopy.efi
 EFI/OC/Drivers/OpenPartitionDxe.efi
+EFI/OC/Drivers/ResetNvramEntry.efi
+EFI/OC/Drivers/ToggleSipEntry.efi
 EFI/OC/Kexts/Lilu.kext
 EFI/OC/Kexts/AppleALC.kext
 EFI/OC/Kexts/WhateverGreen.kext

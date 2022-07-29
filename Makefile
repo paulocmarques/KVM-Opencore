@@ -14,7 +14,9 @@ DRIVERS= \
 	EFI/OC/Drivers/OpenHfsPlus.efi \
 	EFI/OC/Drivers/OpenRuntime.efi \
 	EFI/OC/Drivers/OpenCanopy.efi \
-	EFI/OC/Drivers/OpenPartitionDxe.efi
+	EFI/OC/Drivers/OpenPartitionDxe.efi \
+	EFI/OC/Drivers/ResetNvramEntry.efi \
+	EFI/OC/Drivers/ToggleSipEntry.efi
 
 TOOLS = \
 	EFI/OC/Tools/Shell.efi \
@@ -166,7 +168,8 @@ EFI/OC/OpenCore.efi : $(OPENCORE_UDK_BUILD_DIR)/OpenCore.efi
 	cp -a $< $@
 
 EFI/OC/Drivers/OpenRuntime.efi EFI/OC/Drivers/OpenHfsPlus.efi EFI/OC/Drivers/OpenPartitionDxe.efi \
- : $(OPENCORE_UDK_BUILD_DIR)/OpenRuntime.efi $(OPENCORE_UDK_BUILD_DIR)/OpenHfsPlus.efi $(OPENCORE_UDK_BUILD_DIR)/OpenPartitionDxe.efi
+EFI/OC/Drivers/ResetNvramEntry.efi EFI/OC/Drivers/ToggleSipEntry.efi \
+ : $(OPENCORE_UDK_BUILD_DIR)/OpenRuntime.efi $(OPENCORE_UDK_BUILD_DIR)/OpenHfsPlus.efi $(OPENCORE_UDK_BUILD_DIR)/OpenPartitionDxe.efi $(OPENCORE_UDK_BUILD_DIR)/ResetNvramEntry.efi $(OPENCORE_UDK_BUILD_DIR)/ToggleSipEntry.efi
 	mkdir -p EFI/OC/Drivers
 	cp -a $? EFI/OC/Drivers/
 
