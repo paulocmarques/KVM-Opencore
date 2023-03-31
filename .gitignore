@@ -16,6 +16,7 @@ EFI/OC/Kexts/BrcmNonPatchRAM2.kext
 EFI/OC/Kexts/BrcmFirmwareData.kext
 EFI/OC/Kexts/BrcmPatchRAM2.kext
 EFI/OC/Kexts/BrcmPatchRAM3.kext
+EFI/OC/Kexts/CryptexFixup.kext
 EFI/OC/Tools/Shell.efi
 EFI/OC/Tools/ResetSystem.efi
 EFI/OC/Resources

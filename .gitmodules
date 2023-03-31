@@ -26,3 +26,6 @@
 [submodule "src/BrcmPatchRAM"]
 	path = src/BrcmPatchRAM
 	url = https://github.com/acidanthera/BrcmPatchRAM.git
+[submodule "src/CryptexFixup"]
+	path = src/CryptexFixup
+	url = https://github.com/acidanthera/CryptexFixup.git

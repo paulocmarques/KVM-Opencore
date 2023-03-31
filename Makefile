@@ -8,7 +8,8 @@ KEXTS= \
 	EFI/OC/Kexts/BrcmPatchRAM3.kext \
 	EFI/OC/Kexts/BrcmBluetoothInjector.kext \
 	EFI/OC/Kexts/BlueToolFixup.kext \
-	EFI/OC/Kexts/BrcmFirmwareData.kext
+	EFI/OC/Kexts/BrcmFirmwareData.kext \
+	EFI/OC/Kexts/CryptexFixup.kext
 
 DRIVERS= \
 	EFI/OC/Drivers/OpenHfsPlus.efi \
@@ -36,7 +37,8 @@ SUBMODULES = \
 	src/OpenCorePkg/README.md \
 	src/VirtualSMC/README.md \
 	src/OcBinaryData/Resources \
-	src/MacKernelSDK/README.md
+	src/MacKernelSDK/README.md \
+	src/CryptexFixup/README.md
 
 # Set me to include the version number in the packaged filenames
 RELEASE_VERSION ?= master
@@ -84,7 +86,7 @@ EFI/OC/Kexts/AppleALC.kext : src/AppleALC/build/Release/AppleALC.kext
 	cp -a $< $@
 
 src/AppleALC/build/Release/AppleALC.kext : src/AppleALC src/AppleALC/Lilu.kext src/AppleALC/MacKernelSDK
-	cd src/AppleALC && xcodebuild -configuration Release
+	cd src/AppleALC && xcodebuild -configuration $(OPENCORE_MODE)
 
 # WhateverGreen:
 
@@ -92,7 +94,7 @@ EFI/OC/Kexts/WhateverGreen.kext : src/WhateverGreen/build/Release/WhateverGreen.
 	cp -a $< $@
 
 src/WhateverGreen/build/Release/WhateverGreen.kext : src/WhateverGreen src/WhateverGreen/Lilu.kext src/WhateverGreen/MacKernelSDK
-	cd src/WhateverGreen && xcodebuild -configuration Release
+	cd src/WhateverGreen && xcodebuild -configuration $(OPENCORE_MODE)
 
 # VirtualSMC:
 
@@ -100,7 +102,7 @@ EFI/OC/Kexts/VirtualSMC.kext : src/VirtualSMC/build/Release/VirtualSMC.kext
 	cp -a $< $@
 
 src/VirtualSMC/build/Release/VirtualSMC.kext : src/VirtualSMC/Lilu.kext src/VirtualSMC/MacKernelSDK
-	cd src/VirtualSMC && xcodebuild -configuration Release
+	cd src/VirtualSMC && xcodebuild -configuration $(OPENCORE_MODE)
 	touch $@
 
 # BrcmPatchRAM:
@@ -114,7 +116,7 @@ src/BrcmPatchRAM/build/Products/Release/BrcmFirmwareData.kext \
 src/BrcmPatchRAM/build/Products/Release/BrcmBluetoothInjector.kext : src/BrcmPatchRAM/Lilu.kext src/BrcmPatchRAM/MacKernelSDK
 	# Needs macOS 11 SDK rather than 12.0 to meet deployment target, e.g. from https://github.com/phracker/MacOSX-SDKs and:
 	# export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk
-	cd src/BrcmPatchRAM && xcodebuild -configuration Release
+	cd src/BrcmPatchRAM && xcodebuild -configuration $(OPENCORE_MODE)
 	touch $@
 
 EFI/OC/Kexts/BrcmNonPatchRAM.kext : src/BrcmPatchRAM/build/Products/Release/BrcmNonPatchRAM.kext
@@ -138,6 +140,14 @@ EFI/OC/Kexts/BlueToolFixup.kext : src/BrcmPatchRAM/build/Products/Release/BlueTo
 EFI/OC/Kexts/BrcmFirmwareData.kext : src/BrcmPatchRAM/build/Products/Release/BrcmFirmwareData.kext
 	cp -a $< $@
 
+# CryptexFixup:
+
+EFI/OC/Kexts/CryptexFixup.kext : src/CryptexFixup/build/Release/CryptexFixup.kext
+	cp -a $< $@
+
+src/CryptexFixup/build/Release/CryptexFixup.kext : src/CryptexFixup src/CryptexFixup/Lilu.kext src/CryptexFixup/MacKernelSDK
+	cd src/CryptexFixup && xcodebuild -configuration $(OPENCORE_MODE)
+
 # Lilu:
 
 EFI/OC/Kexts/Lilu.kext : src/Lilu/build/Release/Lilu.kext
@@ -150,7 +160,8 @@ src/Lilu/build/Release/Lilu.kext src/Lilu/build/Debug/Lilu.kext : src/Lilu/MacKe
 src/WhateverGreen/Lilu.kext \
 src/AppleALC/Lilu.kext \
 src/VirtualSMC/Lilu.kext \
-src/BrcmPatchRAM/Lilu.kext : src/Lilu/build/Debug/Lilu.kext
+src/BrcmPatchRAM/Lilu.kext \
+src/CryptexFixup/Lilu.kext : src/Lilu/build/Debug/Lilu.kext
 	ln -s ../Lilu/build/Debug/Lilu.kext $@
 
 # MacKernelSDK:
@@ -159,7 +170,8 @@ src/Lilu/MacKernelSDK \
 src/WhateverGreen/MacKernelSDK \
 src/AppleALC/MacKernelSDK \
 src/VirtualSMC/MacKernelSDK \
-src/BrcmPatchRAM/MacKernelSDK : src/MacKernelSDK
+src/BrcmPatchRAM/MacKernelSDK \
+src/CryptexFixup/MacKernelSDK : src/MacKernelSDK
 	ln -s ../MacKernelSDK $@
 	
 # OpenCore:
@@ -215,5 +227,5 @@ very-clean : clean
 
 clean :
 	rm -rf OpenCore-Image/ src/Lilu/build src/WhateverGreen/build src/OpenCorePkg/UDK/Build src/BrcmPatchRAM/build \
-		src/AppleALC/build $(KEXTS) $(DRIVERS) $(TOOLS) $(MISC)
+		src/AppleALC/build src/CryptexFixup/build $(KEXTS) $(DRIVERS) $(TOOLS) $(MISC)
 	rm -f OpenCore-${RELEASE_VERSION}.dmg* OpenCore-${RELEASE_VERSION}.iso* OpenCoreEFIFolder-${RELEASE_VERSION}.zip 
